@@ -44,6 +44,8 @@ func main() {
 	// You'll also need to register the "register" command here
 	cmds.register("register", handlerRegister)
 
+	cmds.register("reset", handlerDeleteAllUsers)
+
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")
 	}
