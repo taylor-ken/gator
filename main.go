@@ -42,6 +42,7 @@ func main() {
 	cmds.register("users", handlerListUsers)
 	cmds.register("agg", handlerAgg)
 	cmds.register("addfeed", handlerAddFeed)
+	cmds.register("feeds", handlerListFeeds)
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")
@@ -50,6 +51,8 @@ func main() {
 	cmdName := os.Args[1]
 	cmdArgs := os.Args[2:]
 
+	log.Printf("Available commands: %v", cmds.registeredCommands)
+	log.Printf("Received command: %v", cmdName)
 	err = cmds.run(programState, command{Name: cmdName, Args: cmdArgs})
 	if err != nil {
 		log.Fatal(err)
