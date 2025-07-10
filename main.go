@@ -21,30 +21,27 @@ func main() {
 		log.Fatalf("error reading config: %v", err)
 	}
 
-	// Set up database connection FIRST
-	dbURL := "postgres://postgres:postgres@localhost:5432/gator"
-	db, err := sql.Open("postgres", dbURL)
+	db, err := sql.Open("postgres", cfg.DBURL)
 	if err != nil {
-		log.Fatalf("error opening database: %v", err)
+		log.Fatalf("error connecting to db: %v", err)
 	}
-
-	// Create the database queries object
+	defer db.Close()
 	dbQueries := database.New(db)
 
-	// Create programState with BOTH config and database
 	programState := &state{
-		cfg: &cfg,
 		db:  dbQueries,
+		cfg: &cfg,
 	}
 
 	cmds := commands{
 		registeredCommands: make(map[string]func(*state, command) error),
 	}
 	cmds.register("login", handlerLogin)
-	// You'll also need to register the "register" command here
 	cmds.register("register", handlerRegister)
-
-	cmds.register("reset", handlerDeleteAllUsers)
+	cmds.register("reset", handlerReset)
+	cmds.register("users", handlerListUsers)
+	cmds.register("agg", handlerAgg)
+	cmds.register("addfeed", handlerAddFeed)
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")
